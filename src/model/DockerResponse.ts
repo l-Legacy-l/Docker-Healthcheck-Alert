@@ -6,6 +6,7 @@ export class ContainerDetails {
     Id: string;
     State: State;
     Health: Health;
+    Name: string;
 }
 export class State {
     Status: STATE_STATUS;
