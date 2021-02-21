@@ -22,7 +22,7 @@ const mailOptions = {
 };
 
 
-let unHealthyContainers: string[] = [];
+let unHealthyContainerIds: string[] = [];
 
 const dockerAxios = axios.create(config);
 
@@ -43,26 +43,27 @@ async function main() {
   const containers: Container[] = await request('/containers/json');
 
   for (const container of containers) {
-    const {Id, Health}: ContainerDetails = await request('/containers/' + container.Id + '/json');
-    if(Health?.Status) {
-      if (Health.Status !== HEALTH_STATUS.healthy &&
-        !unHealthyContainers.find((unHealthyContainer) => unHealthyContainer === Id)) {
+    const containerDetails: ContainerDetails = await request('/containers/' + container.Id + '/json');
+    if(containerDetails.Health?.Status) {
+      if (containerDetails.Health.Status !== HEALTH_STATUS.healthy &&
+        !unHealthyContainerIds.find((Id) => Id === containerDetails.Id)) {
   
-        unHealthyContainers.push(Id);
-        sendAlert(Id);
+        unHealthyContainerIds.push(containerDetails.Id);
+        sendAlert(containerDetails);
   
-      } else if (Health.Status === HEALTH_STATUS.healthy &&
-        unHealthyContainers.find((unHealthyContainer) => unHealthyContainer === Id)) {
+      } else if (containerDetails.Health.Status === HEALTH_STATUS.healthy &&
+        unHealthyContainerIds.find((Id) => Id === containerDetails.Id)) {
   
-        unHealthyContainers.filter((unHealthyContainer) => unHealthyContainer !== Id);
+        unHealthyContainerIds.filter((Id) => Id !== containerDetails.Id);
       }
     }
 
   }
 }
 
-function sendAlert(Id: string) {
-  mailOptions.text= 'Unhealthy container: ' + Id;
+function sendAlert(container: ContainerDetails) {
+  mailOptions.text= 'Unhealthy container reported: ' + '\n id: ' + container.Id + '\n Health: ' + JSON.stringify(container?.Health) +
+  '\n State: ' + JSON.stringify(container.State);
   transporter.sendMail(mailOptions, (error: string, info: {response: string}) => {
     if (error) {
       console.log(error);
