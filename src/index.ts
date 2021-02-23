@@ -39,10 +39,10 @@ async function request(path: string) {
     if (response?.status >= 200 && response?.status < 300) {
       return response.data;
     }
-    throw new Error('Error: ' + response.status);
+    throw new Error('Error, response status from docker socket was : ' + response.status);
 
   } catch (error) {
-    throw new Error('Error: ' + error);
+    throw new Error('Error on the HTTP call: ' + error);
   }
 }
 
@@ -90,7 +90,7 @@ function sendAlert(container: ContainerDetails, mailOptions: {
 
   transporter.sendMail(mailOptions, (error: string, info: { response: string }) => {
     if (error) {
-      console.log(error);
+      throw new Error('Error when sending the mail: ' + error);
     } else {
       console.log('Email sent: ' + info.response);
     }
