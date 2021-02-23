@@ -46,9 +46,16 @@ async function request(path: string) {
   }
 }
 
-async function main() {
-  const containers: Container[] = await request('/containers/json');
+function main() {
+  const interval = process.env.INTERVAL ? +process.env.INTERVAL : 180000
+  setInterval(() => {
+    performContainerHeathCheck();
+  }, interval);
 
+}
+
+async function performContainerHeathCheck() {
+  const containers: Container[] = await request('/containers/json');
   for (const container of containers) {
     const containerDetails: ContainerDetails = await request('/containers/' + container.Id + '/json');
     if (containerDetails.Health?.Status) {
