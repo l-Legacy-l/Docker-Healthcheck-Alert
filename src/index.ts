@@ -7,7 +7,7 @@ const config: AxiosRequestConfig = {
   socketPath: '/var/run/docker.sock'
 }
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: process.env.MAIL_SERVICE,
   auth: {
     user: process.env.MAIL_FROM,
     pass: process.env.PASSWORD

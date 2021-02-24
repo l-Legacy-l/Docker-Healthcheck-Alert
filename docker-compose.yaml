@@ -4,9 +4,10 @@ services:
         volumes:
             - '/var/run/docker.sock:/var/run/docker.sock:ro'
         environment:
-            - MAIL_FROM=example@example.com
+            - MAIL_FROM=example@gmail.com
             - PASSWORD=example
-            - MAIL_TO=example@example.com
+            - MAIL_TO=example@gmail.com
+            - MAIL_SERVICE=gmail
             - INTERVAL=180000 #Optional (in ms)
         image: legacy18/docker-healthcheck-alert
         restart: unless-stopped
