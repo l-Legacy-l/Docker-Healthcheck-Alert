@@ -18,14 +18,14 @@ const mailOptionsUnhealthy = {
   from: process.env.MAIL_FROM,
   to: process.env.MAIL_TO,
   subject: 'Docker Heathcheck Alert - Unhealthy container reported',
-  text: ''
+  html: ''
 };
 
 const mailOptionsHealthy = {
   from: process.env.MAIL_FROM,
   to: process.env.MAIL_TO,
   subject: 'Docker Heathcheck Alert - Healthy container reported',
-  text: ''
+  html: ''
 };
 
 
@@ -78,14 +78,16 @@ async function performContainerHeathCheck() {
 
 function sendAlert(container: ContainerDetails, mailOptions: {
   from: string | undefined, to: string | undefined, subject: string,
-  text: string
+  html: string
 }) {
   if (container.State.Health.Status === HEALTH_STATUS.unhealthy) {
-    mailOptions.text = 'Container ' + container.Name + ' is unhealthy:' + '\nid: ' + container.Id + '\nHealth: ' + JSON.stringify(container.State.Health) +
-      '\nStatus: ' + JSON.stringify(container.State.Status);
+    mailOptions.html = '<p>Container ' + container.Name + ' is unhealthy:</p><p>' + '<strong>id:</strong> ' + container.Id + '</p><p><strong>Health:</strong> '
+    + JSON.stringify(container.State.Health) +
+     '</p><p><strong>Status:</strong> ' + JSON.stringify(container.State.Status)+'</p>';
   } else {
-    mailOptions.text = 'Container ' + container.Name + ' is back to healthy:' + '\nid: ' + container.Id + '\nHealth: ' + JSON.stringify(container.State.Health) +
-      '\nStatus: ' + JSON.stringify(container.State.Status);
+    mailOptions.html = '<p>Container ' + container.Name + ' is back to healthy:</p><p>' + '<strong>id:</strong> ' + container.Id + '</p><p><strong>Health:</strong> '
+     + JSON.stringify(container.State.Health) +
+      '</p><p><strong>Status:</strong> ' + JSON.stringify(container.State.Status)+'</p>';
   }
 
   transporter.sendMail(mailOptions, (error: string, info: { response: string }) => {
