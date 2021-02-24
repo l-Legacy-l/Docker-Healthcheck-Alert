@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+    docker-healthcheck-alert:
+        volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock:ro'
+        environment:
+            - MAIL_FROM=example@example.com
+            - PASSWORD=example
+            - MAIL_TO=example@example.com
+            - INTERVAL=180000 #Optional (in ms)
+        image: legacy18/docker-healthcheck-alert
+        restart: unless-stopped
