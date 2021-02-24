@@ -5,11 +5,11 @@ export class Container {
 export class ContainerDetails {
     Id: string;
     State: State;
-    Health: Health;
     Name: string;
 }
 export class State {
     Status: STATE_STATUS;
+    Health: Health;
     Error: string;
 }
 export class Health {

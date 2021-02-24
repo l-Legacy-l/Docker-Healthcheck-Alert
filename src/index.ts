@@ -58,14 +58,14 @@ async function performContainerHeathCheck() {
   const containers: Container[] = await request('/containers/json');
   for (const container of containers) {
     const containerDetails: ContainerDetails = await request('/containers/' + container.Id + '/json');
-    if (containerDetails.Health?.Status) {
-      if (containerDetails.Health.Status !== HEALTH_STATUS.healthy &&
+    if (containerDetails.State?.Health?.Status) {
+      if (containerDetails.State.Health.Status !== HEALTH_STATUS.healthy &&
         !unHealthyContainerIds.find((Id) => Id === containerDetails.Id)) {
 
         unHealthyContainerIds.push(containerDetails.Id);
         sendAlert(containerDetails, mailOptionsUnhealthy);
 
-      } else if (containerDetails.Health.Status === HEALTH_STATUS.healthy &&
+      } else if (containerDetails.State.Health.Status === HEALTH_STATUS.healthy &&
         unHealthyContainerIds.find((Id) => Id === containerDetails.Id)) {
 
         unHealthyContainerIds.filter((Id) => Id !== containerDetails.Id);
@@ -80,12 +80,12 @@ function sendAlert(container: ContainerDetails, mailOptions: {
   from: string | undefined, to: string | undefined, subject: string,
   text: string
 }) {
-  if (container.Health.Status === HEALTH_STATUS.unhealthy) {
-    mailOptions.text = 'Container ' + container.Name + ' is unhealthy:' + '\nid: ' + container.Id + '\nHealth: ' + JSON.stringify(container?.Health) +
-      '\nState: ' + JSON.stringify(container.State);
+  if (container.State.Health.Status === HEALTH_STATUS.unhealthy) {
+    mailOptions.text = 'Container ' + container.Name + ' is unhealthy:' + '\nid: ' + container.Id + '\nHealth: ' + JSON.stringify(container.State.Health) +
+      '\nStatus: ' + JSON.stringify(container.State.Status);
   } else {
-    mailOptions.text = 'Container ' + container.Name + ' is back to healthy:' + '\nid: ' + container.Id + '\nHealth: ' + JSON.stringify(container?.Health) +
-      '\nState: ' + JSON.stringify(container.State);
+    mailOptions.text = 'Container ' + container.Name + ' is back to healthy:' + '\nid: ' + container.Id + '\nHealth: ' + JSON.stringify(container.State.Health) +
+      '\nStatus: ' + JSON.stringify(container.State.Status);
   }
 
   transporter.sendMail(mailOptions, (error: string, info: { response: string }) => {
