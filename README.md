@@ -22,10 +22,9 @@ See the list here => https://nodemailer.com/smtp/well-known/
 
 ## Installation
 ### Docker
-Docker images is available in DockerHub:
+Docker image is available in DockerHub => https://hub.docker.com/r/legacy18/docker-healthcheck-alert
 
-DockerHub => https://hub.docker.com/r/legacy18/docker-healthcheck-alert
-a docker-compose.yml configuration file is provided in the source. You can Clone this repository or copy the file and execute docker-compose up -d to start the container
+docker-compose.yml configuration file is also provided in the source. You can Clone this repository or copy the file and execute ``` docker-compose up -d ``` to start the container
 
 ### From source code
 * Install [NodeJS](https://nodejs.org/)
