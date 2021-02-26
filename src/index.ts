@@ -59,7 +59,7 @@ async function performContainerHeathCheck() {
   for (const container of containers) {
     const containerDetails: ContainerDetails = await request('/containers/' + container.Id + '/json');
     if (containerDetails.State?.Health?.Status) {
-      if (containerDetails.State.Health.Status !== HEALTH_STATUS.healthy &&
+      if (containerDetails.State.Health.Status === HEALTH_STATUS.unhealthy &&
         !unHealthyContainerIds.find((Id) => Id === containerDetails.Id)) {
 
         unHealthyContainerIds.push(containerDetails.Id);
@@ -68,7 +68,7 @@ async function performContainerHeathCheck() {
       } else if (containerDetails.State.Health.Status === HEALTH_STATUS.healthy &&
         unHealthyContainerIds.find((Id) => Id === containerDetails.Id)) {
 
-        unHealthyContainerIds.filter((Id) => Id !== containerDetails.Id);
+        unHealthyContainerIds = unHealthyContainerIds.filter((Id) => Id !== containerDetails.Id);
         sendAlert(containerDetails, mailOptionsHealthy);
       }
     }
@@ -82,12 +82,12 @@ function sendAlert(container: ContainerDetails, mailOptions: {
 }) {
   if (container.State.Health.Status === HEALTH_STATUS.unhealthy) {
     mailOptions.html = '<p>Container ' + container.Name + ' is unhealthy:</p><p>' + '<strong>id:</strong> ' + container.Id + '</p><p><strong>Health:</strong> '
-    + JSON.stringify(container.State.Health) +
-     '</p><p><strong>Status:</strong> ' + JSON.stringify(container.State.Status)+'</p>';
+      + JSON.stringify(container.State.Health) +
+      '</p><p><strong>Status:</strong> ' + JSON.stringify(container.State.Status) + '</p>';
   } else {
     mailOptions.html = '<p>Container ' + container.Name + ' is back to healthy:</p><p>' + '<strong>id:</strong> ' + container.Id + '</p><p><strong>Health:</strong> '
-     + JSON.stringify(container.State.Health) +
-      '</p><p><strong>Status:</strong> ' + JSON.stringify(container.State.Status)+'</p>';
+      + JSON.stringify(container.State.Health) +
+      '</p><p><strong>Status:</strong> ' + JSON.stringify(container.State.Status) + '</p>';
   }
 
   transporter.sendMail(mailOptions, (error: string, info: { response: string }) => {
